@@ -775,7 +775,7 @@ rules:
 # 注意：YAML 通常不支持直接引用外部 rule-provider 链接作为单行规则，
 # 除非你在 rule-providers 里定义了 GoogleDrive。
 # 如果 OpenClash 预置了 GoogleDrive 的 geosite，可以用：
-- "GEOSITE,google-drive,☁️ 公有云盘" 
+- "RULE-SET,GoogleDrive,☁️ 公有云盘" 
 # 或者通用匹配：
 - "DOMAIN-SUFFIX,googleapis.com,☁️ 公有云盘"
 - "GEOSITE,private,🎯 全球直连"
@@ -856,3 +856,10 @@ rule-providers:
     type: http
     url: "https://raw.githubusercontent.com/Aethersailor/Custom_OpenClash_Rules/refs/heads/main/rule/Steam_CDN_Classical.yaml"
     proxy: DIRECT
+
+  GoogleDrive:
+    behavior: classical
+    interval: 10800
+    type: http
+    path: "./rule_provider/GoogleDrive.yaml"
+    url: "https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GoogleDrive/GoogleDrive.yaml"
