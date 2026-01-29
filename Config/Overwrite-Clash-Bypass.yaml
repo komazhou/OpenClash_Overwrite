@@ -22,6 +22,27 @@ proxy-providers:
       udp: true
 
 proxy-groups:
+  - name: "🏠 我的VPS"
+    type: select
+    # INI 逻辑：正则提取名字含 VPS 或 GIA 的节点 (INI里其实写的是排除香港等地区，这里我根据INI的正则逻辑还原)
+    # 注意：INI里的正则 `(?i)^(?!.*(香港|HK|Hong|🇭🇰|Macao|MO|Russia|RU)).*` 是为了排除这些地区
+    # 如果你想提取特定节点，建议根据你的实际节点命名修改 filter
+    filter: "(?i)(VPS|GIA|MyNode)" 
+    use:
+      - provider
+    proxies:
+      - "🇺🇸 美国节点"
+      - "🇯🇵 日本节点"
+      - "🇸🇬 新加坡节点"
+      - "🚀 手动选择"
+
+  - name: "☁️ 公有云盘"
+    type: select
+    proxies:
+      - "♻️ 自动选择"
+      - "🚀 手动选择"
+    # 这里不需要 filter，因为它只是引用其他策略组
+    
   - name: "🚀 手动选择"
     type: select
     url: "https://cp.cloudflare.com/generate_204"
@@ -635,7 +656,9 @@ proxy-groups:
   - name: "🇺🇸 美国节点"
     type: url-test
     url: https://www.gstatic.com/generate_204
-    filter: "(?i)(美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|UnitedStates|🇺🇸)"
+    # 原 YAML: filter: "(?i)(美|波特兰...)"
+    # 修改为 INI 逻辑 (排除 bwh, GIA, VPS):
+    filter: "^(?!.*(?:bwh|GIA|VPS)).*(?i)(美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|UnitedStates|🇺🇸)"
     use:
       - provider
     interval: 300
@@ -753,6 +776,14 @@ proxy-groups:
       - "🐟 漏网之鱼"
 
 rules:
+# --- 对应 INI 中的 [大流量云盘区] ---
+- "GEOSITE,dropbox,☁️ 公有云盘"
+# 注意：YAML 通常不支持直接引用外部 rule-provider 链接作为单行规则，
+# 除非你在 rule-providers 里定义了 GoogleDrive。
+# 如果 OpenClash 预置了 GoogleDrive 的 geosite，可以用：
+- "GEOSITE,google-drive,☁️ 公有云盘" 
+# 或者通用匹配：
+- "DOMAIN-SUFFIX,googleapis.com,☁️ 公有云盘"
 - "GEOSITE,private,🎯 全球直连"
 - "GEOIP,private,🎯 全球直连,no-resolve"
 - "RULE-SET,Custom_Direct,🎯 全球直连"
